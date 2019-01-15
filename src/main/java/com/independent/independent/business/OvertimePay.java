@@ -6,6 +6,7 @@ import com.independent.independent.utils.ExcelReaderUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -26,12 +27,22 @@ public class OvertimePay {
     private static String DinnerStartTime = "18:00";
     private static String DinnerEndTime = "19:00";
 
-    public void getOvertimePayByExcel(String path){
+    public String getOvertimePayByExcel(String path){
+        File file=new File(path);
+        if(!file.exists()){
+            return "未找到"+path+"文件！";
+        }
         String fileName = path.substring(path.lastIndexOf("\\"),path.lastIndexOf("."));
         List<OvertimePayModel> list = getModel(path);
         String newPath = path.substring(0,path.lastIndexOf("\\"));
         newPath = newPath + fileName + "-副本.xlsx";
-        getExcel(list,newPath);
+        String resultPath = getExcel(list,newPath);
+        if(resultPath != null){
+            resultPath = "导出成功，文件位于" + resultPath;
+        }else{
+            resultPath = "导出失败，请重试！";
+        }
+        return resultPath;
     }
 
     public List<OvertimePayModel> getModel(String path){
@@ -84,7 +95,7 @@ public class OvertimePay {
         return overtimePayModelList;
     }
 
-    public void getExcel(List<OvertimePayModel> overtimePayModelList,String path){
+    public String getExcel(List<OvertimePayModel> overtimePayModelList,String path){
         String[] headers = {"序号", "部门", "提交人", "加班", "审批记录", "加班费", "误餐费", "合计"};
         // 声明一个工作薄
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -132,8 +143,10 @@ public class OvertimePay {
             out = new FileOutputStream(path);
             workbook.write(out);
             out.close();
+            return path;
         }catch (IOException e){
             e.printStackTrace();
+            return null;
         }
     }
 

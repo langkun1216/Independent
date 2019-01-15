@@ -14,7 +14,8 @@ public class BusinessApplication {
         if(0==JOptionPane.YES_OPTION && selectedValue != null && selectedValue.toString().equals("导出加班费")){
             String path = JOptionPane.showInputDialog("请输入文件所在文件夹，例如：G:\\test\\Test1.xlsx");
             if(0==JOptionPane.YES_OPTION && path != null){
-                new OvertimePay().getOvertimePayByExcel(path);
+                String message = new OvertimePay().getOvertimePayByExcel(path);
+                JOptionPane.showMessageDialog(null,message);
             }
         }
     }

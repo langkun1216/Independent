@@ -27,10 +27,10 @@ public class OvertimePay {
     private static String DinnerStartTime = "18:00";
     private static String DinnerEndTime = "19:00";
 
-    public String getOvertimePayByExcel(String path){
-        File file=new File(path);
-        if(!file.exists()){
-            return "未找到"+path+"文件！";
+    public String getOvertimePayByExcel(File file){
+        String path = file.getPath();
+        if(!path.substring(path.lastIndexOf("."),path.length()-1).equals("xls") || path.substring(path.lastIndexOf("."),path.length()-1).equals("xlsx")){
+            return "所选文件格式不正确！";
         }
         String fileName = path.substring(path.lastIndexOf("\\"),path.lastIndexOf("."));
         List<OvertimePayModel> list = getModel(path);

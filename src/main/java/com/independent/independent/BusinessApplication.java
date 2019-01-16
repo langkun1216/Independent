@@ -24,9 +24,8 @@ public class BusinessApplication {
 
             if(jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
                 File file=jfc.getSelectedFile();
-
                 if(0==JOptionPane.YES_OPTION && file.getPath() != null){
-                    String message = new OvertimePay().getOvertimePayByExcel(file.getPath());
+                    String message = new OvertimePay().getOvertimePayByExcel(file);
                     JOptionPane.showMessageDialog(null,message);
                 }
             }

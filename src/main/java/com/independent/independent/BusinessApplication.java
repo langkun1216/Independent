@@ -1,5 +1,6 @@
 package com.independent.independent;
 
+import com.independent.independent.business.ExcelFileFilter;
 import com.independent.independent.business.OvertimePay;
 
 import javax.swing.*;
@@ -14,9 +15,16 @@ public class BusinessApplication {
                 JOptionPane.INFORMATION_MESSAGE, null,
                 possibleValues, possibleValues[0]);
         if(0==JOptionPane.YES_OPTION && selectedValue != null && selectedValue.toString().equals("导出加班费")){
-            JFileChooser jfc=new JFileChooser();
-            if(jfc.showOpenDialog(null)==JFileChooser.APPROVE_OPTION){
+            //文件选择器
+            JFileChooser jfc = new JFileChooser();
+            //excel过滤器
+            ExcelFileFilter excelFilter = new ExcelFileFilter();
+            jfc.addChoosableFileFilter(excelFilter);
+            jfc.setFileFilter(excelFilter);
+
+            if(jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
                 File file=jfc.getSelectedFile();
+
                 if(0==JOptionPane.YES_OPTION && file.getPath() != null){
                     String message = new OvertimePay().getOvertimePayByExcel(file.getPath());
                     JOptionPane.showMessageDialog(null,message);

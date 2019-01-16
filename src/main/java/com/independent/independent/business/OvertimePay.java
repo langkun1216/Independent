@@ -131,7 +131,13 @@ public class OvertimePay {
             row.createCell(0).setCellValue(overtimePayModelList.get(i).getId());
             row.createCell(1).setCellValue(overtimePayModelList.get(i).getDepartment());
             row.createCell(2).setCellValue(overtimePayModelList.get(i).getSubmitter());
-            row.createCell(3).setCellValue(overtimePayModelList.get(i).getOvertimeType() == 0 ? DelayedOvertime : WeekendOvertime);
+            if(overtimePayModelList.get(i).getOvertimeType() == 1){
+                row.createCell(3).setCellValue(WeekendOvertime);
+            }else if(overtimePayModelList.get(i).getOvertimeType() == 2){
+                row.createCell(3).setCellValue(HolidayOvertime);
+            }else{
+                row.createCell(3).setCellValue(DelayedOvertime);
+            }
             row.createCell(4).setCellValue(overtimePayModelList.get(i).getApprovalRecord());
             row.createCell(5).setCellValue(overtimePayModelList.get(i).getOvertimePay());
             row.createCell(6).setCellValue(overtimePayModelList.get(i).getCompensation());

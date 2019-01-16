@@ -29,7 +29,8 @@ public class OvertimePay {
 
     public String getOvertimePayByExcel(File file){
         String path = file.getPath();
-        if(!path.substring(path.lastIndexOf("."),path.length()-1).equals("xls") || path.substring(path.lastIndexOf("."),path.length()-1).equals("xlsx")){
+        String a= path.substring(path.lastIndexOf("."),path.length()-1);
+        if(!path.substring(path.lastIndexOf("."),path.length()-1).equals(".xls") && !path.substring(path.lastIndexOf("."),path.length()-1).equals(".xlsx")){
             return "所选文件格式不正确！";
         }
         String fileName = path.substring(path.lastIndexOf("\\"),path.lastIndexOf("."));
@@ -163,17 +164,13 @@ public class OvertimePay {
         Date dinnerStartTime = DateUtil.stringToDate(DinnerStartTime,"HH:mm");
         Date dinnerEndTime = DateUtil.stringToDate(DinnerEndTime,"HH:mm");
 
-        //开始时间<中餐开始时间 且 结束时间>晚餐结束时间，为两餐
-        if(start.getTime() <= lunchStartTime.getTime() && end.getTime() >= dinnerEndTime.getTime()){
-            result = 30;
+        //开始时间<=中餐开始时间 且 结束时间>=中餐结束时间 ，为中餐
+        if(start.getTime() <= lunchStartTime.getTime() && end.getTime() >= lunchEndTime.getTime()){
+            result += 15;
         }
-        //开始时间<中餐开始时间 且 结束时间>中餐结束时间 且 结束时间<晚餐开始时间，为中餐
-        if(start.getTime() <= lunchStartTime.getTime() && end.getTime() >= lunchEndTime.getTime() && end.getTime() < dinnerEndTime.getTime()){
-            result = 15;
-        }
-        //开始时间>中餐结束时间 且 开始时间<=晚餐开始时间 且 结束时间>=晚餐开始时间，为晚餐
-        if(start.getTime() >= lunchEndTime.getTime() && start.getTime() <= dinnerStartTime.getTime() && end.getTime() >= dinnerEndTime.getTime()){
-            result = 15;
+        //开始时间<=晚餐开始时间 且 结束时间>=晚餐开始时间，为晚餐
+        if(start.getTime() <= dinnerStartTime.getTime() && end.getTime() >= dinnerEndTime.getTime()){
+            result += 15;
         }
         return result.toString();
     }

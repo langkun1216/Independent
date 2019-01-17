@@ -51,7 +51,7 @@ public class OvertimePay {
         List<OvertimePayModel> overtimePayModelList = new ArrayList<>();
         for (int i=1;i<lists.size();i++) {
             List<String> list = lists.get(i);
-            if(list.isEmpty()){
+            if(StringUtils.isBlank(list.get(0))){
                 continue;
             }
             OvertimePayModel overtimePayModel = new OvertimePayModel();

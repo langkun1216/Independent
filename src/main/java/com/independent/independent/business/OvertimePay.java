@@ -3,6 +3,7 @@ package com.independent.independent.business;
 import com.independent.independent.model.OvertimePayModel;
 import com.independent.independent.utils.DateUtil;
 import com.independent.independent.utils.ExcelReaderUtil;
+import com.independent.independent.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 
@@ -13,6 +14,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class OvertimePay {
     private static String DelayedOvertime = "延时加班";
@@ -29,7 +31,6 @@ public class OvertimePay {
 
     public String getOvertimePayByExcel(File file){
         String path = file.getPath();
-        String a= path.substring(path.lastIndexOf("."),path.length()-1);
         if(!path.substring(path.lastIndexOf("."),path.length()-1).equals(".xls") && !path.substring(path.lastIndexOf("."),path.length()-1).equals(".xlsx")){
             return "所选文件格式不正确！";
         }
@@ -55,35 +56,41 @@ public class OvertimePay {
                 continue;
             }
             OvertimePayModel overtimePayModel = new OvertimePayModel();
-            overtimePayModel.setId(list.get(0));
-            overtimePayModel.setDepartment(list.get(1));
-            overtimePayModel.setSubmitter(list.get(2));
-            if(StringUtils.isBlank(list.get(3))){
-                continue;
-            }
+            overtimePayModel.setId(i+"");
+            overtimePayModel.setDepartment(list.get(8));
+            overtimePayModel.setSubmitter(list.get(7));
             //判断加班类型
-            if(list.get(3).equals(WeekendOvertime)){
-                overtimePayModel.setOvertimeType(1);
-            }else if(list.get(3).equals(HolidayOvertime)){
-                overtimePayModel.setOvertimeType(2);
-            }else{
-                overtimePayModel.setOvertimeType(0);
-            }
-            if(StringUtils.isBlank(list.get(4))){
+            List<Map<String, Object>> jsonList = JsonUtils.parseJSON2List(list.get(2));
+            if(jsonList == null || jsonList.isEmpty()){
                 continue;
             }
-            overtimePayModel.setApprovalRecord(list.get(4));
-            overtimePayModel.setStartTime(DateUtil.stringToDate(list.get(4).substring(list.get(4).indexOf("开始时间")+4,list.get(4).indexOf("结束时间")),DateUtil.DATE_FORMAT_YMDHM));
-            overtimePayModel.setEndTime(DateUtil.stringToDate(list.get(4).substring(list.get(4).indexOf("结束时间")+4,list.get(4).indexOf("时长（小时）")),DateUtil.DATE_FORMAT_YMDHM));
+            for(int j=0;j<jsonList.size();j++){
+                if(jsonList.get(j).get("value").equals(WeekendOvertime)){
+                    overtimePayModel.setOvertimeType(1);
+                }else if(jsonList.get(j).get("value").equals(HolidayOvertime)){
+                    overtimePayModel.setOvertimeType(2);
+                }else if(jsonList.get(j).get("value").equals(DelayedOvertime)){
+                    overtimePayModel.setOvertimeType(0);
+                }
+            }
+            //获取审批记录
+            String approvalRecordString = list.get(6).substring(list.get(6).indexOf("开始时间"),list.get(6).length()-1);
+            overtimePayModel.setApprovalRecord(approvalRecordString);
+            overtimePayModel.setStartTime(DateUtil.stringToDate(approvalRecordString.substring(approvalRecordString.indexOf("开始时间")+4,approvalRecordString.indexOf("结束时间")),DateUtil.DATE_FORMAT_YMDHM));
+            overtimePayModel.setEndTime(DateUtil.stringToDate(approvalRecordString.substring(approvalRecordString.indexOf("结束时间")+4,approvalRecordString.indexOf("时长（小时）")),DateUtil.DATE_FORMAT_YMDHM));
+
+//            overtimePayModel.setApprovalRecord(list.get(4));
+//            overtimePayModel.setStartTime(DateUtil.stringToDate(list.get(4).substring(list.get(4).indexOf("开始时间")+4,list.get(4).indexOf("结束时间")),DateUtil.DATE_FORMAT_YMDHM));
+//            overtimePayModel.setEndTime(DateUtil.stringToDate(list.get(4).substring(list.get(4).indexOf("结束时间")+4,list.get(4).indexOf("时长（小时）")),DateUtil.DATE_FORMAT_YMDHM));
             //overtimePayModel.setDuration((overtimePayModel.getEndTime().getTime()-overtimePayModel.getStartTime().getTime()) / (1000 * 60 * 60));
             //判断时长，如果超过8小时按8小时算
-            overtimePayModel.setDuration(Long.valueOf(list.get(4).substring(list.get(4).indexOf("时长（小时）")+6,list.get(4).indexOf("；"))) >Long.valueOf("8") ? Long.valueOf("8") : Long.valueOf(list.get(4).substring(list.get(4).indexOf("时长（小时）")+6,list.get(4).indexOf("；"))));
+            overtimePayModel.setDuration(Long.valueOf(approvalRecordString.substring(approvalRecordString.indexOf("时长（小时）")+6,approvalRecordString.indexOf("；"))) >Long.valueOf("8") ? Long.valueOf("8") : Long.valueOf(approvalRecordString.substring(approvalRecordString.indexOf("时长（小时）")+6,approvalRecordString.indexOf("；"))));
 
             //计算加班费用
             Long overtimePay = null;
-            if(list.get(3).equals(WeekendOvertime)){
+            if(overtimePayModel.getOvertimeType() == 1){
                 overtimePay = overtimePayModel.getDuration()*40;
-            }else if(list.get(3).equals(HolidayOvertime)){
+            }else if(overtimePayModel.getOvertimeType() == 2){
                 overtimePay = overtimePayModel.getDuration()*80;
             }else{
                 overtimePay = overtimePayModel.getDuration()*20;

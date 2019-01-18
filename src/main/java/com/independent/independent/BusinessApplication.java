@@ -6,10 +6,11 @@ import com.independent.independent.business.OvertimePay;
 import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class BusinessApplication {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         Object[] possibleValues = {"导出加班费"};
         Object selectedValue = JOptionPane.showInputDialog(null, "请选择一种业务类型", "选择业务类型",
                 JOptionPane.INFORMATION_MESSAGE, null,

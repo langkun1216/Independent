@@ -1,9 +1,10 @@
 package com.independent.independent.business;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.independent.independent.model.OvertimePayModel;
 import com.independent.independent.utils.DateUtil;
 import com.independent.independent.utils.ExcelReaderUtil;
-import com.independent.independent.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 
@@ -29,7 +30,7 @@ public class OvertimePay {
     private static String DinnerStartTime = "18:00";
     private static String DinnerEndTime = "19:00";
 
-    public String getOvertimePayByExcel(File file){
+    public String getOvertimePayByExcel(File file) throws IOException {
         String path = file.getPath();
         if(!path.substring(path.lastIndexOf("."),path.length()-1).equals(".xls") && !path.substring(path.lastIndexOf("."),path.length()-1).equals(".xlsx")){
             return "所选文件格式不正确！";
@@ -47,7 +48,7 @@ public class OvertimePay {
         return resultPath;
     }
 
-    public List<OvertimePayModel> getModel(String path){
+    public List<OvertimePayModel> getModel(String path) throws IOException {
         List<List<String>> lists = ExcelReaderUtil.readExcel(path);
         List<OvertimePayModel> overtimePayModelList = new ArrayList<>();
         for (int i=1;i<lists.size();i++) {
@@ -60,7 +61,9 @@ public class OvertimePay {
             overtimePayModel.setDepartment(list.get(8));
             overtimePayModel.setSubmitter(list.get(7));
             //判断加班类型
-            List<Map<String, Object>> jsonList = JsonUtils.parseJSON2List(list.get(2));
+            //List<Map<String, Object>> jsonList = JsonUtils.parseJSON2List(list.get(2));
+            ObjectMapper mapper = new ObjectMapper();
+            List<Map<String, Object>> jsonList = mapper.readValue(list.get(2),new TypeReference<List<Map<String, Object>>>() { });
             if(jsonList == null || jsonList.isEmpty()){
                 continue;
             }

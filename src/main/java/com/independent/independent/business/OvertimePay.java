@@ -2,6 +2,7 @@ package com.independent.independent.business;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.independent.independent.Enum.ResultEnum;
 import com.independent.independent.model.OvertimePayModel;
 import com.independent.independent.utils.DateUtil;
 import com.independent.independent.utils.ExcelReaderUtil;
@@ -30,20 +31,22 @@ public class OvertimePay {
     private static String DinnerStartTime = "18:00";
     private static String DinnerEndTime = "19:00";
 
+    private static String FILE_EXTENSION_NAME = "-副本";
+
     public String getOvertimePayByExcel(File file) throws IOException {
         String path = file.getPath();
         if(!path.substring(path.lastIndexOf("."),path.length()-1).equals(".xls") && !path.substring(path.lastIndexOf("."),path.length()-1).equals(".xlsx")){
-            return "所选文件格式不正确！";
+            return ResultEnum.FILE_FORMAT_ERROR.getMessage();
         }
         String fileName = path.substring(path.lastIndexOf("\\"),path.lastIndexOf("."));
         List<OvertimePayModel> list = getModel(path);
         String newPath = path.substring(0,path.lastIndexOf("\\"));
-        newPath = newPath + fileName + "-副本.xlsx";
+        newPath = newPath + fileName + FILE_EXTENSION_NAME + ".xlsx";
         String resultPath = getExcel(list,newPath);
         if(resultPath != null){
-            resultPath = "导出成功，文件位于" + resultPath;
+            resultPath = ResultEnum.EXPORT_SUCCESS.getMessage() + resultPath;
         }else{
-            resultPath = "导出失败，请重试！";
+            resultPath = ResultEnum.EXPORT_ERROR.getMessage();
         }
         return resultPath;
     }

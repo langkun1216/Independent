@@ -30,7 +30,7 @@ public class OvertimePay {
     public String getOvertimePayByExcel(File file){
         String path = file.getPath();
         String a= path.substring(path.lastIndexOf("."),path.length()-1);
-        if(!path.substring(path.lastIndexOf("."),path.length()-1).equals(".xls") && !path.substring(path.lastIndexOf("."),path.length()-1).equals(".xlsx")){
+        if(!path.substring(path.lastIndexOf("."),path.length()).equals(".xls") && !path.substring(path.lastIndexOf("."),path.length()).equals(".xlsx")){
             return "所选文件格式不正确！";
         }
         String fileName = path.substring(path.lastIndexOf("\\"),path.lastIndexOf("."));

@@ -36,7 +36,7 @@ public class OvertimePay {
 
     public String getOvertimePayByExcel(File file) throws IOException {
         String path = file.getPath();
-        if(!path.substring(path.lastIndexOf("."),path.length()-1).equals(".xls") && !path.substring(path.lastIndexOf("."),path.length()-1).equals(".xlsx")){
+        if(!path.substring(path.lastIndexOf("."),path.length()).equals(".xls") && !path.substring(path.lastIndexOf("."),path.length()).equals(".xlsx")){
             return ResultEnum.FILE_FORMAT_ERROR.getMessage();
         }
         String fileName = path.substring(path.lastIndexOf("\\"),path.lastIndexOf("."));

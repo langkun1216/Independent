@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +25,7 @@ public class OvertimePay {
     private static String LunchStartTime = "12:00";
     private static String LunchEndTime = "13:00";
 
-    private static String DinnerStartTime = "18:00";
+    private static String DinnerStartTime = "18:30";
     private static String DinnerEndTime = "19:00";
 
     public String getOvertimePayByExcel(File file){
@@ -162,13 +163,16 @@ public class OvertimePay {
 
     public static String checkTiem(Date startTime, Date endTime){
         Integer result = 0;
-        DateFormat dateFormat = DateFormat.getTimeInstance();//只显示出时分秒
-        Date start = DateUtil.stringToDate(dateFormat.format(startTime),"HH:mm");
-        Date end = DateUtil.stringToDate(dateFormat.format(endTime),"HH:mm");
-        Date lunchStartTime = DateUtil.stringToDate(LunchStartTime,"HH:mm");
-        Date lunchEndTime = DateUtil.stringToDate(LunchEndTime,"HH:mm");
-        Date dinnerStartTime = DateUtil.stringToDate(DinnerStartTime,"HH:mm");
-        Date dinnerEndTime = DateUtil.stringToDate(DinnerEndTime,"HH:mm");
+        //DateFormat dateFormat = DateFormat.getTimeInstance();//只显示出时分秒
+        //Date start = DateUtil.stringToDate(dateFormat.format(startTime),DateUtil.DATE_FORMAT_YMDHM);
+        //Date end = DateUtil.stringToDate(dateFormat.format(endTime),DateUtil.DATE_FORMAT_YMDHM);
+        Date start = startTime;
+        Date end = endTime;
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date lunchStartTime = DateUtil.stringToDate(formatter.format(start) + " " + LunchStartTime,DateUtil.DATE_FORMAT_YMDHM);
+        Date lunchEndTime = DateUtil.stringToDate(formatter.format(start) + " " + LunchEndTime,DateUtil.DATE_FORMAT_YMDHM);
+        Date dinnerStartTime = DateUtil.stringToDate(formatter.format(start) + " " + DinnerStartTime,DateUtil.DATE_FORMAT_YMDHM);
+        Date dinnerEndTime = DateUtil.stringToDate(formatter.format(start) + " " + DinnerEndTime,DateUtil.DATE_FORMAT_YMDHM);
 
         //开始时间<=中餐开始时间 且 结束时间>=中餐结束时间 ，为中餐
         if(start.getTime() <= lunchStartTime.getTime() && end.getTime() >= lunchEndTime.getTime()){
